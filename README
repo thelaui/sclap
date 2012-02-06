@@ -1,3 +1,5 @@
 CLAP - a simple command line argument parser, written in c++
 
+It helps to specify parameters, check if they are set and, if so, read out the given values.
+
 (c) 2012 by Felix Lauer
