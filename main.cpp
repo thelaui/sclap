@@ -1,13 +1,10 @@
-#include "CLAP.hpp"
+#include "sclap.hpp"
 
 int main(int argc, const char** argv) {
 
-    CLAP parser;
+    sclap::Parser parser;
     parser.add_argument("--help", 2);
-    parser.parse(argc, argv);
-
-    parser.print_values();
-
+    parser.parse_arguments(argc, argv);
 
     if (parser.is_set("--help"))
         std::cout<<"haha"<<std::endl;

@@ -1,17 +1,19 @@
-#ifndef CLAP_HPP
-#define CLAP_HPP
+#ifndef SCLAP_HPP
+#define SCLAP_HPP
 
 #include <iostream>
 #include <sstream>
 #include <map>
 #include <vector>
 
-class CLAP {
+namespace sclap {
+
+class Parser {
     public:
-        CLAP():
+        Parser():
             values_(){}
 
-        void parse(int argc, const char** argv) {
+        void parse_arguments(int argc, const char** argv) {
             values_["program_name"].first = true;
             values_["program_name"].second.push_back(argv[0]);
 
@@ -93,4 +95,6 @@ class CLAP {
         std::map<std::string, std::pair<bool, std::vector<std::string> > > values_;
 };
 
-#endif //CLAP_HPP
+}
+
+#endif //SCLAP_HPP
