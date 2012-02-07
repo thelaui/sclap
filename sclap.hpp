@@ -20,15 +20,22 @@ class Parser {
             for (int i(1); i<argc; ++i) {
                 std::map<std::string, std::pair<bool, std::vector<std::string> > >::iterator match(values_.find(argv[i]));
                 if (match != values_.end()) {
-                    match->second.first = true;
                     for (unsigned j(0); j < match->second.second.size(); ++j) {
-                        if (i+1 < argc) {
-                            ++i;
+                        if (++i < argc) {
+                            if (values_.find(argv[i]) != values_.end()) {
+                                std::cout << "ERROR: Number of values given for argument \""<< match->first << "\" is less than expected! Cancelling..."<<std::endl;
+                                return;
+                            }
                             match->second.second[j] = argv[i];
+
+                        } else if (j < match->second.second.size()){
+                            std::cout << "ERROR: Number of values given for argument \""<< match->first << "\" is less than expected! Cancelling..."<<std::endl;
+                            return;
                         }
                     }
+                    match->second.first = true;
                 } else {
-                    std::cout << "ERROR: Argument "<< argv[i] << " is not a valid parameter!"<<std::endl;
+                    std::cout << "ERROR: Argument \""<< argv[i] << "\" is not a valid parameter!"<<std::endl;
                 }
             }
         }
@@ -37,7 +44,7 @@ class Parser {
             if (values_.find(argument_name) == values_.end())
                 values_.insert(std::make_pair(argument_name, std::make_pair(false, std::vector<std::string>(value_count))));
             else {
-                std::cout << "WARNING: Argument "<< argument_name << " has already been set! Overwriting..."<<std::endl;
+                std::cout << "WARNING: Argument \""<< argument_name << "\" has already been set! Overwriting..."<<std::endl;
             }
         }
 
@@ -46,7 +53,7 @@ class Parser {
             if (searched != values_.end())
                 return searched->second.first;
 
-            std::cout << "ERROR: Argument "<< argument_name << " has not been added to the list of possible arguments! Returnig default value..."<<std::endl;
+            std::cout << "ERROR: Argument \""<< argument_name << "\" has not been added to the list of possible arguments! Returnig default value..."<<std::endl;
             return false;
         }
 
@@ -73,10 +80,10 @@ class Parser {
                         return_values.push_back(new_value);
                     }
                 } else {
-                    std::cout << "WARNING: Argument "<< argument_name << " has not been set! Returnig default value..."<<std::endl;
+                    std::cout << "WARNING: Argument \""<< argument_name << "\" has not been set! Returnig default value..."<<std::endl;
                 }
             } else {
-                std::cout << "ERROR: Argument "<< argument_name << " has not been added to the list of possible arguments! Returnig default value..."<<std::endl;
+                std::cout << "ERROR: Argument \""<< argument_name << "\" has not been added to the list of possible arguments! Returnig default value..."<<std::endl;
             }
 
             return return_values;
