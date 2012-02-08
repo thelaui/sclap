@@ -3,11 +3,11 @@
 int main(int argc, const char** argv) {
 
     sclap::Parser parser;
-    parser.add_argument("--help", 3);
+    parser.add_argument("--help");
     parser.parse_arguments(argc, argv);
 
     if (parser.is_set("--help"))
-        std::cout<<"haha"<<std::endl;
+        std::cout<<parser.get_value_of<int>("--help")<<std::endl;
 
     return 0;
 }

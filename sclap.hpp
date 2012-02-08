@@ -59,7 +59,7 @@ class Parser {
 
         template <typename T>
         T const get_value_of(std::string const& argument_name) {
-            T return_value;
+            T return_value = T();
             std::vector<T> return_values(get_values_of<T>(argument_name));
             if (!return_values.empty())
                 return_value = return_values.front();
