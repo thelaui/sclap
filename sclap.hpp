@@ -67,7 +67,7 @@ class Parser {
         ///\param argv The char buffer containing the data to be parsed.
         ////////////////////////////////////////////////////////////////////////
         void parse_parameters(int argc, const char** argv) {
-            values_["program_name"].first = true;
+            values_["program_name"].first = 1;
             values_["program_name"].second.first = false;
             values_["program_name"].second.second.push_back(argv[0]);
 
@@ -76,22 +76,21 @@ class Parser {
                     print_parameter_information();
                     break;
                 } else {
-                    std::map<std::string, std::pair<bool, std::pair<bool, std::vector<std::string> > > >::iterator match(values_.find(argv[i]));
+                    std::map<std::string, std::pair<unsigned, std::pair<bool, std::vector<std::string> > > >::iterator match(values_.find(argv[i]));
                     if (match != values_.end()) {
-                        for (unsigned j(0); j < match->second.second.second.size(); ++j) {
+                        for (unsigned j(0); j < match->second.first; ++j) {
                             if (++i < argc) {
-                                if (values_.find(argv[i]) != values_.end() && ! match->second.second.first) {
+                                if (values_.find(argv[i]) != values_.end() && !match->second.second.first) {
                                     std::cout << "ERROR: Number of values given for parameter \""<< match->first << "\" is less than expected! Cancelling..."<<std::endl;
                                     return;
                                 }
-                                match->second.second.second[j] = argv[i];
+                                match->second.second.second.push_back(argv[i]);
 
-                            } else if (j < match->second.second.second.size() && ! match->second.second.first){
+                            } else if (j < match->second.first && !match->second.second.first){
                                 std::cout << "ERROR: Number of values given for parameter \""<< match->first << "\" is less than expected! Cancelling..."<<std::endl;
                                 return;
                             }
                         }
-                        match->second.first = true;
                     } else {
                         std::cout << "ERROR: parameter \""<< argv[i] << "\" is not a valid parameter!"<<std::endl;
                     }
@@ -113,10 +112,10 @@ class Parser {
         ////////////////////////////////////////////////////////////////////////
         void add_parameter(std::string const& parameter_name, unsigned value_count = 1, bool less_allowed = false) {
             if (values_.find(parameter_name) == values_.end()) {
-                values_.insert(std::make_pair(parameter_name, std::make_pair(false, std::make_pair(less_allowed, std::vector<std::string>(value_count)))));
+                values_.insert(std::make_pair(parameter_name, std::make_pair(value_count, std::make_pair(less_allowed, std::vector<std::string>()))));
                 parameter_info_.insert(std::make_pair(parameter_name, std::string()));
             } else {
-                std::cout << "WARNING: parameter \""<< parameter_name << "\" has already been set! Overwriting..."<<std::endl;
+                std::cout << "WARNING: parameter \""<< parameter_name << "\" has already been set!"<<std::endl;
             }
         }
 
@@ -158,9 +157,9 @@ class Parser {
         ///\param parameter_name The name of the parameter to be checked.
         ////////////////////////////////////////////////////////////////////////
         bool is_set(std::string const& parameter_name) {
-            std::map<std::string, std::pair<bool, std::pair<bool, std::vector<std::string> > > >::const_iterator searched(values_.find(parameter_name));
+            std::map<std::string, std::pair<unsigned, std::pair<bool, std::vector<std::string> > > >::const_iterator searched(values_.find(parameter_name));
             if (searched != values_.end())
-                return searched->second.first;
+                return !searched->second.second.second.empty();
 
             std::cout << "ERROR: parameter \""<< parameter_name << "\" has not been added to the list of possible parameters! Returnig default value..."<<std::endl;
             return false;
@@ -203,7 +202,7 @@ class Parser {
         template <typename T>
         std::vector<T> const get_values_of(std::string const& parameter_name) {
             std::vector<T> return_values;
-            std::map<std::string, std::pair<bool, std::pair<bool, std::vector<std::string> > > >::const_iterator searched(values_.find(parameter_name));
+            std::map<std::string, std::pair<unsigned, std::pair<bool, std::vector<std::string> > > >::const_iterator searched(values_.find(parameter_name));
 
             if (searched != values_.end()) {
                 if (searched->second.first) {
@@ -241,7 +240,7 @@ class Parser {
         /// This prints the values of all parameters. Useful for debugging.
         ////////////////////////////////////////////////////////////////////////
         void print_values() const {
-            for (std::map<std::string, std::pair<bool, std::pair<bool, std::vector<std::string> > > >::const_iterator it(values_.begin()); it!=values_.end(); ++it) {
+            for (std::map<std::string, std::pair<unsigned, std::pair<bool, std::vector<std::string> > > >::const_iterator it(values_.begin()); it!=values_.end(); ++it) {
                 std::cout<<it->first << ": ";
                 for (std::vector<std::string>::const_iterator val(it->second.second.second.begin()); val!=it->second.second.second.end(); ++val)
                     std::cout << *val << " ";
@@ -250,8 +249,8 @@ class Parser {
         }
 
     private:
-        //name, is set, less allowed, values
-        std::map<std::string, std::pair<bool, std::pair<bool, std::vector<std::string> > > > values_;
+        //name, expected number of values, less allowed, values
+        std::map<std::string, std::pair<unsigned, std::pair<bool, std::vector<std::string> > > > values_;
         std::map<std::string, std::string> parameter_info_;
         std::string print_info_trigger_;
 };
