@@ -72,8 +72,8 @@ int main(int argc, const char** argv) {
     /// IMPORTANT NOTICE:
     /// The order provided within this example is mandatory! That means you
     /// have to add parameters to the database BEFORE you can set parameter
-    /// info (which makes no sence anyway). Furthermore it is necessary to
-    /// parse arguments BEFORE you can check the values.
+    /// info. Furthermore it is necessary to parse arguments BEFORE you can
+    /// check the values.
 
     return 0;
 }
