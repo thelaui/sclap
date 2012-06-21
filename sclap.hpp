@@ -72,7 +72,7 @@ class Parser {
             values_["program_name"].second.second.push_back(argv[0]);
 
             for (int i(1); i<argc; ++i) {
-                if (argv[i] == print_info_trigger_) {
+                if (std::string(argv[i]) == print_info_trigger_) {
                     print_parameter_information();
                     break;
                 } else {
@@ -131,7 +131,7 @@ class Parser {
         ////////////////////////////////////////////////////////////////////////
         void set_parameter_info(std::string const& parameter_name, std::string const& info) {
             if (values_.find(parameter_name) != values_.end())
-                parameter_info_.insert(std::make_pair(parameter_name, info));
+                parameter_info_[parameter_name] = info;
             else std::cout << "ERROR: parameter \""<< parameter_name << "\" has not been added to the list of possible parameters! Doing nothing..."<<std::endl;
         }
 
@@ -145,7 +145,7 @@ class Parser {
         ///\param info_trigger The name of the info_trigger (e.g. --help).
         ////////////////////////////////////////////////////////////////////////
         void set_print_info_trigger(std::string const& info_trigger) {
-            print_info_trigger_ =  info_trigger;
+            print_info_trigger_ = info_trigger;
         }
 
         ////////////////////////////////////////////////////////////////////////
@@ -156,7 +156,7 @@ class Parser {
         ///
         ///\param parameter_name The name of the parameter to be checked.
         ////////////////////////////////////////////////////////////////////////
-        bool is_set(std::string const& parameter_name) {
+        bool is_set(std::string const& parameter_name) const{
             std::map<std::string, std::pair<unsigned, std::pair<bool, std::vector<std::string> > > >::const_iterator searched(values_.find(parameter_name));
             if (searched != values_.end())
                 return !searched->second.second.second.empty();
@@ -179,7 +179,7 @@ class Parser {
         ///              type you specified with the template parameter.
         ////////////////////////////////////////////////////////////////////////
         template <typename T>
-        T const get_value_of(std::string const& parameter_name) {
+        T const get_value_of(std::string const& parameter_name) const{
             T return_value = T();
             std::vector<T> return_values(get_values_of<T>(parameter_name));
             if (!return_values.empty())
@@ -200,7 +200,7 @@ class Parser {
         ///               type you specified with the template parameter.
         ////////////////////////////////////////////////////////////////////////
         template <typename T>
-        std::vector<T> const get_values_of(std::string const& parameter_name) {
+        std::vector<T> const get_values_of(std::string const& parameter_name) const{
             std::vector<T> return_values;
             std::map<std::string, std::pair<unsigned, std::pair<bool, std::vector<std::string> > > >::const_iterator searched(values_.find(parameter_name));
 
@@ -231,7 +231,7 @@ class Parser {
         ////////////////////////////////////////////////////////////////////////
         void print_parameter_information() const {
             for (std::map<std::string, std::string>::const_iterator it(parameter_info_.begin()); it!=parameter_info_.end(); ++it)
-                std::cout<<it->first << ": " << it->second <<std::endl;
+                std::cout << it->first << ":\t" << it->second << std::endl;
         }
 
         ////////////////////////////////////////////////////////////////////////

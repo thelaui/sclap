@@ -59,15 +59,15 @@ int main(int argc, const char** argv) {
     if (parser.is_set("--mother"))
         std::cout << "The mother's name is "
                   << parser.get_value_of<std::string>("--mother")
-                  <<std::endl;
+                  << std::endl;
 
     /// Get multiple values.
     if (parser.is_set("--children"))
         if (parser.get_values_of<std::string>("--children").size() > 3)
-            std::cout<<"This is a pretty big family!"<<std::endl;
+            std::cout << "This is a pretty big family!" << std::endl;
 
     /// Print the set values for all parameters.
-    parser.print_values();
+    //parser.print_values();
 
     /// IMPORTANT NOTICE:
     /// The order provided within this example is mandatory! That means you
